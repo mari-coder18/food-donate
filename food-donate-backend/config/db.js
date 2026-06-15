@@ -1,24 +1,18 @@
-const mysql = require("mysql2/promise");
+
+const mysql = require("mysql2");
 require("dotenv").config();
 
-const pool = mysql.createPool({
-  uri: process.env.MYSQL_URL,
-  ssl: {
-    rejectUnauthorized: false
+const connection = mysql.createPool(process.env.MYSQL_URL);
+
+connection.getConnection((err, conn) => {
+  if (err) {
+    console.log("Database NOT connected ❌");
+    console.log(err);
+  } else {
+    console.log("Database connected successfully 🚀");
+    conn.release();
   }
 });
 
-(async () => {
-  let conn;
-  try {
-    conn = await pool.getConnection();
-    console.log("Database connected successfully 🚀");
-  } catch (err) {
-    console.log("Database NOT connected ❌");
-    console.log("Error:", err.message);
-  } finally {
-    if (conn) conn.release();
-  }
-})();
+module.exports = connection;
 
-module.exports = pool;
