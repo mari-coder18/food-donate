@@ -1,18 +1,25 @@
-
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise"); // 👈 Promise version-ah mathியாச்சு
 require("dotenv").config();
 
-const connection = mysql.createPool(process.env.MYSQL_URL);
-
-connection.getConnection((err, conn) => {
-  if (err) {
-    console.log("Database NOT connected ❌");
-    console.log(err);
-  } else {
-    console.log("Database connected successfully 🚀");
-    conn.release();
-  }
+// MySQL connection pool 
+const connection = mysql.createPool({
+  uri: process.env.MYSQL_URL,
+  waitForConnections: true,
+  connectionLimit: 10, // Default-ah safe pool limit
+  queueLimit: 0
 });
 
-module.exports = connection;
+// Database connect 
+(async () => {
+  try {
+    const conn = await connection.getConnection();
+    console.log("🚀 Database connected successfully!");
+    conn.release(); // Connection-ah pool-ku thirumba release panrom
+  } catch (err) {
+    console.log("❌ Database NOT connected ");
+    console.error(err);
+  }
+})();
 
+
+module.exports = connection;
