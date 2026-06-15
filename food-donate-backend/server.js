@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authroute");
 const donationsRoute = require("./routes/donationsroute");
 const volunteerRoutes = require("./routes/volunteerRoute");
 const adminRoute = require("./routes/adminRoute");
+const userRoute = require("./routes/userRoute");
 
 const app = express(); 
 
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/donations", donationsRoute);
 app.use("/api/volunteers", volunteerRoutes);
 app.use("/api/admin",adminRoute);
+app.use("/api/users",userRoute);
 
 app.use((err,req,res,next)=>{
   console.error(err.stack);

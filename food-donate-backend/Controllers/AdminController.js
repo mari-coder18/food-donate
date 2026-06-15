@@ -18,7 +18,8 @@ const deleteUser = (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ message: 'User deleted' });
+    res.status(200).json({success: true,
+       message: 'User deleted successfully' });
   });
 };
 
