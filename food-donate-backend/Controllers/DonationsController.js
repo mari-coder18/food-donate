@@ -6,12 +6,12 @@ const createDonation = async (req, res) => {
     const { foodName, quantity, expiry, location } = req.body;
     const donorId = req.user.id;
 
+    // ✅ FIXED: foodName changed to food_name
     const sql =
-      "INSERT INTO donations (foodName, quantity, expiry, location, status, donor_id) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO donations (food_name, quantity, expiry, location, status, donor_id) VALUES (?, ?, ?, ?, ?, ?)";
 
-    // [result] array destructuring use panrom, callback function-ah thookiyachu
     const [result] = await connection.query(sql, [
-      foodName,
+      foodName, // Frontend field camelCase variables mapping as values array
       quantity,
       expiry,
       location,
@@ -96,10 +96,11 @@ const updateDonation = async (req, res) => {
     const { id } = req.params;
     const { foodName, quantity, expiry, location } = req.body;
 
+    // ✅ FIXED: SET foodName=? to food_name=?
     const sql =
       role === "admin"
-        ? "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=?"
-        : "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=? AND donor_id=?";
+        ? "UPDATE donations SET food_name=?, quantity=?, expiry=?, location=? WHERE id=?"
+        : "UPDATE donations SET food_name=?, quantity=?, expiry=?, location=? WHERE id=? AND donor_id=?";
 
     const params =
       role === "admin"
@@ -189,7 +190,8 @@ const updatedDonationStatus = async (req, res) => {
 /* ================= GET PUBLIC DONATIONS ================= */
 const getPublicDonations = async (req, res) => {
   try {
-    const sql = "SELECT id, foodName, quantity , status FROM donations WHERE status ='Available' LIMIT 3";
+    // ✅ FIXED: Selected food_name from database
+    const sql = "SELECT id, food_name AS foodName, quantity, status FROM donations WHERE status ='Available' LIMIT 3";
 
     const [rows] = await connection.query(sql);
     res.status(200).json(rows);
