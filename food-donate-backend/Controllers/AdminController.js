@@ -1,26 +1,40 @@
 const connection = require('../config/db');
 
 // GET all users (admin only)
-const getAllUsers = (req, res) => {
-  const sql = 'SELECT id, name, email, role FROM users ORDER BY id DESC';
-  connection.query(sql, (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.json(result);
-  });
+const getAllUsers = async (req, res) => {
+  try {
+    const sql = 'SELECT id, name, email, role FROM users ORDER BY id DESC';
+    
+    // Callback function-ah thookitu [rows] destructuring format
+    const [rows] = await connection.query(sql);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 // DELETE a user by id (admin only)
-const deleteUser = (req, res) => {
-  const { id } = req.params;
-  const sql = 'DELETE FROM users WHERE id = ?';
-  connection.query(sql, [id], (err, result) => {
-    if (err) return res.status(500).json(err);
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = 'DELETE FROM users WHERE id = ?';
+    
+    // [result] array destructuring pattern
+    const [result] = await connection.query(sql, [id]);
+    
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(200).json({success: true,
-       message: 'User deleted successfully' });
-  });
+    
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully'
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 module.exports = { getAllUsers, deleteUser };

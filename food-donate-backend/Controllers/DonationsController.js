@@ -1,103 +1,112 @@
 const connection = require("../config/db");
 
 /* ================= CREATE DONATION ================= */
-const createDonation = (req, res) => {
-  const { foodName, quantity, expiry, location } = req.body;
-  const donorId = req.user.id;
+const createDonation = async (req, res) => {
+  try {
+    const { foodName, quantity, expiry, location } = req.body;
+    const donorId = req.user.id;
 
-  const sql =
-    "INSERT INTO donations (foodName, quantity, expiry, location, status, donor_id) VALUES (?, ?, ?, ?, ?, ?)";
+    const sql =
+      "INSERT INTO donations (foodName, quantity, expiry, location, status, donor_id) VALUES (?, ?, ?, ?, ?, ?)";
 
-  connection.query(
-    sql,
-    [foodName, quantity, expiry, location, "Available", donorId],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
+    // [result] array destructuring use panrom, callback function-ah thookiyachu
+    const [result] = await connection.query(sql, [
+      foodName,
+      quantity,
+      expiry,
+      location,
+      "Available",
+      donorId,
+    ]);
 
-      res.json({
-        id: result.insertId,
-        foodName,
-        quantity,
-        expiry,
-        location,
-        status: "Available",
-        donor_id: donorId,
-      });
-    }
-  );
+    res.json({
+      id: result.insertId,
+      foodName,
+      quantity,
+      expiry,
+      location,
+      status: "Available",
+      donor_id: donorId,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= GET ALL DONATIONS ================= */
-const getDonations = (req, res) => {
-  const { role, id: userId } = req.user;
+const getDonations = async (req, res) => {
+  try {
+    const { role, id: userId } = req.user;
 
-  let sql = "";
-  let params = [];
+    let sql = "";
+    let params = [];
 
-  if (role === "admin") {
-    sql = "SELECT * FROM donations ORDER BY id DESC";
-  } 
-  else if (role === "donor") {
-    sql = "SELECT * FROM donations WHERE donor_id = ? ORDER BY id DESC";
-    params = [userId];
-  } 
-  else if (role === "ngo") {
-    // NGO sees ALL donations (frontend will filter if needed)
-    sql = "SELECT * FROM donations ORDER BY id DESC";
-  } 
-  else {
-    sql = "SELECT * FROM donations ORDER BY id DESC";
+    if (role === "admin") {
+      sql = "SELECT * FROM donations ORDER BY id DESC";
+    } else if (role === "donor") {
+      sql = "SELECT * FROM donations WHERE donor_id = ? ORDER BY id DESC";
+      params = [userId];
+    } else if (role === "ngo") {
+      sql = "SELECT * FROM donations ORDER BY id DESC";
+    } else {
+      sql = "SELECT * FROM donations ORDER BY id DESC";
+    }
+
+    const [rows] = await connection.query(sql, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
   }
-
-  connection.query(sql, params, (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.json(result);
-  });
 };
 
 /* ================= GET BY ID ================= */
-const getDonationById = (req, res) => {
-  const { role, id: userId } = req.user;
-  const { id } = req.params;
+const getDonationById = async (req, res) => {
+  try {
+    const { role, id: userId } = req.user;
+    const { id } = req.params;
 
-  const sql =
-    role === "admin"
-      ? "SELECT * FROM donations WHERE id = ?"
-      : "SELECT * FROM donations WHERE id = ? AND donor_id = ?";
+    const sql =
+      role === "admin"
+        ? "SELECT * FROM donations WHERE id = ?"
+        : "SELECT * FROM donations WHERE id = ? AND donor_id = ?";
 
-  const params = role === "admin" ? [id] : [id, userId];
+    const params = role === "admin" ? [id] : [id, userId];
 
-  connection.query(sql, params, (err, result) => {
-    if (err) return res.status(500).json(err);
+    const [rows] = await connection.query(sql, params);
 
-    if (result.length === 0) {
+    if (rows.length === 0) {
       return res.status(404).json({
         message: "Donation not found or access denied",
       });
     }
 
-    res.json(result[0]);
-  });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= UPDATE DONATION ================= */
-const updateDonation = (req, res) => {
-  const { role, id: userId } = req.user;
-  const { id } = req.params;
-  const { foodName, quantity, expiry, location } = req.body;
+const updateDonation = async (req, res) => {
+  try {
+    const { role, id: userId } = req.user;
+    const { id } = req.params;
+    const { foodName, quantity, expiry, location } = req.body;
 
-  const sql =
-    role === "admin"
-      ? "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=?"
-      : "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=? AND donor_id=?";
+    const sql =
+      role === "admin"
+        ? "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=?"
+        : "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=? AND donor_id=?";
 
-  const params =
-    role === "admin"
-      ? [foodName, quantity, expiry, location, id]
-      : [foodName, quantity, expiry, location, id, userId];
+    const params =
+      role === "admin"
+        ? [foodName, quantity, expiry, location, id]
+        : [foodName, quantity, expiry, location, id, userId];
 
-  connection.query(sql, params, (err, result) => {
-    if (err) return res.status(500).json(err);
+    const [result] = await connection.query(sql, params);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -106,23 +115,26 @@ const updateDonation = (req, res) => {
     }
 
     res.json({ message: "Updated successfully" });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= DELETE DONATION ================= */
-const deleteDonation = (req, res) => {
-  const { role, id: userId } = req.user;
-  const { id } = req.params;
+const deleteDonation = async (req, res) => {
+  try {
+    const { role, id: userId } = req.user;
+    const { id } = req.params;
 
-  const sql =
-    role === "admin"
-      ? "DELETE FROM donations WHERE id = ?"
-      : "DELETE FROM donations WHERE id = ? AND donor_id = ?";
+    const sql =
+      role === "admin"
+        ? "DELETE FROM donations WHERE id = ?"
+        : "DELETE FROM donations WHERE id = ? AND donor_id = ?";
 
-  const params = role === "admin" ? [id] : [id, userId];
+    const params = role === "admin" ? [id] : [id, userId];
 
-  connection.query(sql, params, (err, result) => {
-    if (err) return res.status(500).json(err);
+    const [result] = await connection.query(sql, params);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -131,28 +143,31 @@ const deleteDonation = (req, res) => {
     }
 
     res.json({ message: "Deleted successfully" });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= UPDATE STATUS ================= */
-const updatedDonationStatus = (req, res) => {
-  const { role } = req.user;
-  const { id } = req.params;
-  const { status } = req.body;
+const updatedDonationStatus = async (req, res) => {
+  try {
+    const { role } = req.user;
+    const { id } = req.params;
+    const { status } = req.body;
 
-  if (!status) {
-    return res.status(400).json({ message: "Status is required" });
-  }
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
 
-  if (!["admin", "ngo"].includes(role)) {
-    return res.status(403).json({ message: "Access denied" });
-  }
+    if (!["admin", "ngo"].includes(role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
 
-  const sql = "UPDATE donations SET status = ? WHERE id = ?";
-  const params = [status, id];
+    const sql = "UPDATE donations SET status = ? WHERE id = ?";
+    const params = [status, id];
 
-  connection.query(sql, params, (err, result) => {
-    if (err) return res.status(500).json(err);
+    const [result] = await connection.query(sql, params);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -165,24 +180,27 @@ const updatedDonationStatus = (req, res) => {
       id,
       status,
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
-const getPublicDonations = (req,res)=> {
-  
-const sql = "SELECT id, foodName, quantity , status FROM donations WHERE status ='Available' LIMIT 3";
+/* ================= GET PUBLIC DONATIONS ================= */
+const getPublicDonations = async (req, res) => {
+  try {
+    const sql = "SELECT id, foodName, quantity , status FROM donations WHERE status ='Available' LIMIT 3";
 
-connection.query(sql,(err,result)=>{
-  if(err)
-  return res.status(500).json({
-    message:"Database Connection Error"
-  })
-
-  res.status(200).json(result);
-})
-}
-
-
+    const [rows] = await connection.query(sql);
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Database Connection Error",
+      error: err.message
+    });
+  }
+};
 
 /* ================= EXPORT ================= */
 module.exports = {

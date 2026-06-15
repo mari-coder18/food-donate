@@ -1,142 +1,151 @@
 const connection = require("../config/db");
 
 /* ================= CREATE VOLUNTEER ================= */
-const createVolunteer = (req, res) => {
-  const { name, phone, location, status } = req.body;
+const createVolunteer = async (req, res) => {
+  try {
+    const { name, phone, location, status } = req.body;
 
-  if (!name || !phone || !location) {
-    return res.status(400).json({
-      message: "name, phone, location are required",
-    });
-  }
-
-  const volunteerStatus = status || "Available";
-
-  const sql =
-    "INSERT INTO volunteers (name, phone, location, status) VALUES (?, ?, ?, ?)";
-
-  connection.query(
-    sql,
-    [name, phone, location, volunteerStatus],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
-
-      res.json({
-        id: result.insertId,
-        name,
-        phone,
-        location,
-        status: volunteerStatus,
+    if (!name || !phone || !location) {
+      return res.status(400).json({
+        message: "name, phone, location are required",
       });
     }
-  );
+
+    const volunteerStatus = status || "Available";
+
+    const sql =
+      "INSERT INTO volunteers (name, phone, location, status) VALUES (?, ?, ?, ?)";
+
+    const [result] = await connection.query(sql, [name, phone, location, volunteerStatus]);
+
+    res.json({
+      id: result.insertId,
+      name,
+      phone,
+      location,
+      status: volunteerStatus,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= GET ALL VOLUNTEERS ================= */
-const getVolunteers = (req, res) => {
-  connection.query(
-    "SELECT id, name, email FROM users WHERE role = 'volunteer' ORDER BY id DESC",
-    (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.json(result);
-    }
-  );
+const getVolunteers = async (req, res) => {
+  try {
+    const [rows] = await connection.query(
+      "SELECT id, name, email FROM users WHERE role = 'volunteer' ORDER BY id DESC"
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= GET VOLUNTEER BY ID ================= */
-const getVolunteerById = (req, res) => {
-  connection.query(
-    "SELECT * FROM volunteers WHERE id=?",
-    [req.params.id],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
+const getVolunteerById = async (req, res) => {
+  try {
+    const [rows] = await connection.query(
+      "SELECT * FROM volunteers WHERE id=?",
+      [req.params.id]
+    );
 
-      if (result.length === 0) {
-        return res.status(404).json({ message: "Volunteer not found" });
-      }
-
-      res.json(result[0]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Volunteer not found" });
     }
-  );
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= UPDATE VOLUNTEER ================= */
-const updateVolunteer = (req, res) => {
-  const { name, phone, location, status } = req.body;
+const updateVolunteer = async (req, res) => {
+  try {
+    const { name, phone, location, status } = req.body;
 
-  const sql =
-    "UPDATE volunteers SET name=?, phone=?, location=?, status=? WHERE id=?";
+    const sql =
+      "UPDATE volunteers SET name=?, phone=?, location=?, status=? WHERE id=?";
 
-  connection.query(
-    sql,
-    [name, phone, location, status, req.params.id],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
+    const [result] = await connection.query(sql, [name, phone, location, status, req.params.id]);
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Volunteer not found" });
-      }
-
-      res.json({ message: "Updated successfully" });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Volunteer not found" });
     }
-  );
+
+    res.json({ message: "Updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= DELETE VOLUNTEER ================= */
-const deleteVolunteer = (req, res) => {
-  connection.query(
-    "DELETE FROM users WHERE id=? AND role='volunteer'",
-    [req.params.id],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
+const deleteVolunteer = async (req, res) => {
+  try {
+    const [result] = await connection.query(
+      "DELETE FROM users WHERE id=? AND role='volunteer'",
+      [req.params.id]
+    );
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Volunteer not found" });
-      }
-
-      res.json({ message: "Deleted successfully" });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Volunteer not found" });
     }
-  );
+
+    res.json({ message: "Deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
 /* ================= PICKUPS ================= */
-const getPickups = (req, res) => {
-  const sql = `
-    SELECT 
-      id,
-       foodName,
-      location,
-      quantity,
-       expiry
-    FROM donations
-    WHERE status = 'Available'
-  `;
+const getPickups = async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+        id,
+        foodName,
+        location,
+        quantity,
+        expiry
+      FROM donations
+      WHERE status = 'Available'
+    `;
 
-  connection.query(sql, (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.json(result);
-  });
+    const [rows] = await connection.query(sql);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
 
-const acceptPickup = (req,res)=>{
+/* ================= ACCEPT PICKUP ================= */
+const acceptPickup = async (req, res) => {
+  try {
+    const id = req.params.id;
 
-  const id = req.params.id;
+    const sql = `
+      UPDATE donations
+      SET status = 'Accepted'
+      WHERE id = ?
+    `;
 
-  const sql =`
-  UPDATE donations
-  SET status = 'Accepted'
-  WHERE id = ?
-  `
-   connection.query(sql, [id], (err, result) => {
-    if (err) return res.status(500).json(err);
+    const [result] = await connection.query(sql, [id]);
 
     res.json({
       message: "Pickup Accepted Successfully"
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 };
-
-
 
 /* ================= EXPORT ================= */
 module.exports = {
