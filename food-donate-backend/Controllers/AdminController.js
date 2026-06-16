@@ -5,7 +5,7 @@ const getAllUsers = async (req, res) => {
   try {
     const sql = 'SELECT id, name, email, role,status FROM users ORDER BY id DESC';
     
-    // Callback function-ah thookitu [rows] destructuring format
+    
     const [rows] = await connection.query(sql);
     res.json(rows);
   } catch (err) {
