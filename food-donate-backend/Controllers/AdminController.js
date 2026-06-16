@@ -3,7 +3,7 @@ const connection = require('../config/db');
 // GET all users (admin only)
 const getAllUsers = async (req, res) => {
   try {
-    const sql = 'SELECT id, name, email, role FROM users ORDER BY id DESC';
+    const sql = 'SELECT id, name, email, role,status FROM users ORDER BY id DESC';
     
     // Callback function-ah thookitu [rows] destructuring format
     const [rows] = await connection.query(sql);

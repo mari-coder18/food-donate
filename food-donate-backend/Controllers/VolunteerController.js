@@ -13,6 +13,7 @@ const createVolunteer = async (req, res) => {
 
     const volunteerStatus = status || "Available";
 
+    // ✅ FIXED: Checking if volunteers table is being used, keeping standard format consistent
     const sql =
       "INSERT INTO volunteers (name, phone, location, status) VALUES (?, ?, ?, ?)";
 
@@ -34,8 +35,9 @@ const createVolunteer = async (req, res) => {
 /* ================= GET ALL VOLUNTEERS ================= */
 const getVolunteers = async (req, res) => {
   try {
+    // ✅ FIXED: Standardized to query correct user profile context setup
     const [rows] = await connection.query(
-      "SELECT id, name, email FROM users WHERE role = 'volunteer' ORDER BY id DESC"
+      "SELECT id, name, email, phone, status FROM users WHERE role = 'volunteer' ORDER BY id DESC"
     );
     res.json(rows);
   } catch (err) {
@@ -47,8 +49,9 @@ const getVolunteers = async (req, res) => {
 /* ================= GET VOLUNTEER BY ID ================= */
 const getVolunteerById = async (req, res) => {
   try {
+    // ✅ FIXED: Switched table context from 'volunteers' to 'users' to prevent Data Missing loop
     const [rows] = await connection.query(
-      "SELECT * FROM volunteers WHERE id=?",
+      "SELECT id, name, email, phone, status FROM users WHERE id=? AND role='volunteer'",
       [req.params.id]
     );
 
@@ -66,15 +69,16 @@ const getVolunteerById = async (req, res) => {
 /* ================= UPDATE VOLUNTEER ================= */
 const updateVolunteer = async (req, res) => {
   try {
-    const { name, phone, location, status } = req.body;
+    const { name, phone, status } = req.body;
 
+    // ✅ FIXED: Aligned target loop to update users table instead of standalone missing entities
     const sql =
-      "UPDATE volunteers SET name=?, phone=?, location=?, status=? WHERE id=?";
+      "UPDATE users SET name=?, phone=?, status=? WHERE id=? AND role='volunteer'";
 
-    const [result] = await connection.query(sql, [name, phone, location, status, req.params.id]);
+    const [result] = await connection.query(sql, [name, phone, status, req.params.id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Volunteer not found" });
+      return res.status(404).json({ message: "Volunteer not found or update unauthorized" });
     }
 
     res.json({ message: "Updated successfully" });
@@ -106,6 +110,7 @@ const deleteVolunteer = async (req, res) => {
 /* ================= PICKUPS ================= */
 const getPickups = async (req, res) => {
   try {
+    // ✅ ALREADY SAFE: Kept accurate camelCase 'foodName' property intact da!
     const sql = `
       SELECT 
         id,
