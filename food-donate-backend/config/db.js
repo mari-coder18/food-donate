@@ -1,25 +1,30 @@
-const mysql = require("mysql2/promise"); // 👈 Promise version-ah mathியாச்சு
+const mysql = require("mysql2/promise");
 require("dotenv").config();
 
-// MySQL connection pool 
-const connection = mysql.createPool({
-  uri: process.env.MYSQL_URL,
+
+const databaseUri = process.env.MYSQL_URL || "mysql://root:getpjscqMxVlkQlArLsDovyiIFVtZjED@thomas.proxy.rlwy.net:14544/railway";
+
+//  MySQL connection 
+const db = mysql.createPool({
+  uri: databaseUri, 
   waitForConnections: true,
-  connectionLimit: 10, // Default-ah safe pool limit
-  queueLimit: 0
+  connectionLimit: 10,
+  queueLimit: 0,
+  ssl: {
+    rejectUnauthorized: false 
+  }
 });
 
-// Database connect 
+// Immediately invoked validation loop to confirm handshake success
 (async () => {
   try {
-    const conn = await connection.getConnection();
-    console.log("🚀 Database connected successfully!");
-    conn.release(); // Connection-ah pool-ku thirumba release panrom
-  } catch (err) {
-    console.log("❌ Database NOT connected ");
-    console.error(err);
+    const checkConnection = await db.getConnection();
+    console.log("🚀 Database connected successfully to Railway Cloud Proxy!");
+    checkConnection.release(); // Releases client resource instance context loop pointer back to connection pool
+  } catch (error) {
+    console.error("❌ Database initialization error!");
+    console.error(error.message);
   }
 })();
 
-
-module.exports = connection;
+module.exports = db;
