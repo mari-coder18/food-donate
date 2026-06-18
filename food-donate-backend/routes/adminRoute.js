@@ -4,7 +4,7 @@ const { getAllUsers, deleteUser } = require('../Controllers/AdminController');
 const verifyToken = require('../middleware/authMiddleware');
 const authorizeRole = require('../middleware/authorizeRole');
 
-// All routes are admin‑only
+// admin‑only
 router.use(verifyToken, authorizeRole(['admin']));
 
 // GET all users

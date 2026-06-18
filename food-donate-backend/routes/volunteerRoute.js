@@ -14,7 +14,7 @@ const {
   acceptPickup
 } = require("../Controllers/VolunteerController");
 
-// ================= PICKUPS (MOVE TOP + ADD AUTH) =================
+// ================= PICKUPS =================
 router.get(
   "/pickups",
   verifyToken,

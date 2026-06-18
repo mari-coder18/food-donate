@@ -8,10 +8,10 @@ const jwt = require("jsonwebtoken");
 const registerUser = async (req, res) => {
   try {
 
-    let { name, email, password, role } = req.body;
+    let { name, email, phone,password, role } = req.body;
 
     // VALIDATION
-    if (!name || !email || !password) {
+    if (!name || !email || !phone || !password) {
       return res.status(400).json({
         message: "All fields are required"
       });
@@ -48,9 +48,9 @@ const registerUser = async (req, res) => {
 
     // INSERT USER
     const [result]= await connection.query(
-      `INSERT INTO users (name, email, password, role)
-       VALUES (?, ?, ?, ?)`,
-      [name, email, hashedPassword, userRole]
+      `INSERT INTO users (name, email, phone, password, role)
+       VALUES (?, ?, ?, ?, ?)`,
+      [name, email, phone, hashedPassword, userRole]
     );
 
     return res.status(201).json({
@@ -125,6 +125,7 @@ const loginUser = async (req, res) => {
       user: {
         id: user.id,
         name: user.name,
+        phone:user.phone,
         email: user.email,
         role: user.role
       }

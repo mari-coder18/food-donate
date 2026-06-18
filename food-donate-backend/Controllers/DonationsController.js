@@ -6,7 +6,7 @@ const createDonation = async (req, res) => {
     const { foodName, quantity, expiry, location } = req.body;
     const donorId = req.user.id;
 
-    // ✅ FIXED: Using exact database naming convention (foodName and donor_id)
+    
     const sql =
       "INSERT INTO donations (foodName, quantity, expiry, location, status, donor_id) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -45,7 +45,7 @@ const getDonations = async (req, res) => {
     if (role === "admin") {
       sql = "SELECT * FROM donations ORDER BY id DESC";
     } else if (role === "donor") {
-      // ✅ FIXED: Using exact database naming convention (donor_id)
+  
       sql = "SELECT * FROM donations WHERE donor_id = ? ORDER BY id DESC";
       params = [userId];
     } else {
@@ -66,7 +66,7 @@ const getDonationById = async (req, res) => {
     const { role, id: userId } = req.user;
     const { id } = req.params;
 
-    // ✅ FIXED: Standardized field criteria parameters to match donor_id
+  
     const sql =
       role === "admin"
         ? "SELECT * FROM donations WHERE id = ?"
@@ -96,7 +96,7 @@ const updateDonation = async (req, res) => {
     const { id } = req.params;
     const { foodName, quantity, expiry, location } = req.body;
 
-    // ✅ FIXED: Rewrote queries using exact database properties (foodName, donor_id)
+
     const sql =
       role === "admin"
         ? "UPDATE donations SET foodName=?, quantity=?, expiry=?, location=? WHERE id=?"
@@ -128,7 +128,7 @@ const deleteDonation = async (req, res) => {
     const { role, id: userId } = req.user;
     const { id } = req.params;
 
-    // ✅ FIXED: Aligned target loop query selector logic to donor_id
+
     const sql =
       role === "admin"
         ? "DELETE FROM donations WHERE id = ?"
@@ -191,8 +191,8 @@ const updatedDonationStatus = async (req, res) => {
 /* ================= GET PUBLIC DONATIONS ================= */
 const getPublicDonations = async (req, res) => {
   try {
-    // ✅ FIXED: Swapped schema selector mapping logic explicitly to column foodName
-    const sql = "SELECT id, foodName, quantity, status FROM donations WHERE status ='Available' LIMIT 3";
+    
+    const sql = "SELECT id, foodName, quantity, location , status FROM donations WHERE status ='Available' LIMIT 3";
 
     const [rows] = await connection.query(sql);
     res.status(200).json(rows);

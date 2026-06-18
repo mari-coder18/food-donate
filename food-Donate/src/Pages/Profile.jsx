@@ -11,10 +11,10 @@ function Profile() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
 
-    // optional cleanup
+  
     sessionStorage.clear();
 
-    //  important: replace prevents back issue
+
     navigate("/login", { replace: true });
   };
 
@@ -43,7 +43,7 @@ function Profile() {
 
         <button
           onClick={handleLogout}
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+          className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 font-[Poppins]"
         >
           Logout
         </button>

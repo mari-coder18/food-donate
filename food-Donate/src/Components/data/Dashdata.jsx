@@ -10,9 +10,7 @@ import {
 } from "react-icons/fa";
 
 export const Dashdata = [
-
-  /* ================= ADMIN ================= */
-
+  /* =================  ADMIN ================= */
   {
     id: 1,
     name: "Dashboard",
@@ -20,7 +18,6 @@ export const Dashdata = [
     icon: FaHome,
     roles: ["admin"],
   },
-
   {
     id: 2,
     name: "All Donations",
@@ -28,7 +25,6 @@ export const Dashdata = [
     icon: FaClipboardList,
     roles: ["admin"],
   },
-
   {
     id: 3,
     name: "Available Donations",
@@ -36,7 +32,6 @@ export const Dashdata = [
     icon: FaClipboardList,
     roles: ["admin"],
   },
-
   {
     id: 4,
     name: "Accepted Donations",
@@ -44,7 +39,6 @@ export const Dashdata = [
     icon: FaCheckCircle,
     roles: ["admin"],
   },
-
   {
     id: 5,
     name: "NGOs",
@@ -52,7 +46,6 @@ export const Dashdata = [
     icon: FaUsers,
     roles: ["admin"],
   },
-
   {
     id: 6,
     name: "Volunteers",
@@ -60,7 +53,6 @@ export const Dashdata = [
     icon: FaHandsHelping,
     roles: ["admin"],
   },
-
   {
     id: 7,
     name: "Analytics",
@@ -68,7 +60,6 @@ export const Dashdata = [
     icon: FaChartBar,
     roles: ["admin"],
   },
-
   {
     id: 8,
     name: "Profile",
@@ -77,8 +68,7 @@ export const Dashdata = [
     roles: ["admin"],
   },
 
-  /* ================= donor ================= */
-
+  /* =================  DONOR ================= */
   {
     id: 9,
     name: "Dashboard",
@@ -86,7 +76,6 @@ export const Dashdata = [
     icon: FaHome,
     roles: ["donor"],
   },
-
   {
     id: 10,
     name: "Add Donation",
@@ -94,7 +83,6 @@ export const Dashdata = [
     icon: FaPlus,
     roles: ["donor"],
   },
-
   {
     id: 11,
     name: "My Donations",
@@ -102,7 +90,6 @@ export const Dashdata = [
     icon: FaClipboardList,
     roles: ["donor"],
   },
-
   {
     id: 12,
     name: "Profile",
@@ -111,8 +98,7 @@ export const Dashdata = [
     roles: ["donor"],
   },
 
-  /* ================= NGO ================= */
-
+  /* =================  NGO ================= */
   {
     id: 13,
     name: "Dashboard",
@@ -120,7 +106,6 @@ export const Dashdata = [
     icon: FaHome,
     roles: ["ngo"],
   },
-
   {
     id: 14,
     name: "Available Donations",
@@ -128,7 +113,6 @@ export const Dashdata = [
     icon: FaClipboardList,
     roles: ["ngo"],
   },
-
   {
     id: 15,
     name: "Accepted Donations",
@@ -136,7 +120,6 @@ export const Dashdata = [
     icon: FaCheckCircle,
     roles: ["ngo"],
   },
-
   {
     id: 16,
     name: "Profile",
@@ -145,8 +128,7 @@ export const Dashdata = [
     roles: ["ngo"],
   },
 
-  /* ================= VOLUNTEER ================= */
-
+  /* =================  VOLUNTEER ================= */
   {
     id: 17,
     name: "Dashboard",
@@ -154,7 +136,6 @@ export const Dashdata = [
     icon: FaHome,
     roles: ["volunteer"],
   },
-
   {
     id: 18,
     name: "Available Pickups",
@@ -162,7 +143,6 @@ export const Dashdata = [
     icon: FaHandsHelping,
     roles: ["volunteer"],
   },
-
   {
     id: 19,
     name: "Profile",
@@ -170,5 +150,4 @@ export const Dashdata = [
     icon: FaUser,
     roles: ["volunteer"],
   },
-
 ];

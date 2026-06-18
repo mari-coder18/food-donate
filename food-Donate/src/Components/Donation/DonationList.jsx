@@ -15,12 +15,12 @@ function DonationList({
 
   return (
 
-    <div className="bg-gray-100 min-h-screen p-5">
+    <div className=" min-h-screen p-5 w-full mx-auto px-2">
 
       {/* ================= HEADING ================= */}
 
       <h1 className="text-3xl font-bold mb-6 text-orange-600">
-        Donation List
+        {/* Donation List */}
       </h1>
 
       {/* ================= EMPTY STATE ================= */}

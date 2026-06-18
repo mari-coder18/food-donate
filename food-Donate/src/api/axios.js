@@ -1,11 +1,16 @@
 import axios from "axios";
 
+const getBaseUrl = () => {
+  return window.location.hostname === "localhost"
+    ? "http://localhost:5000/api"
+    : "https://food-donate-production.up.railway.app/api";
+};
+
 const api = axios.create({
-  baseURL: "https://food-donate-production.up.railway.app/api",
+  baseURL: getBaseUrl(),
   withCredentials: true
 });
 
-// ================= TOKEN INTERCEPTOR =================
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token"); 

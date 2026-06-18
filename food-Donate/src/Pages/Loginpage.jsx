@@ -1,7 +1,7 @@
 import api from "../api/axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { setAuth } from "../auth/auth";   // 🔥 IMPORTANT ADD
+import { setAuth } from "../auth/auth";  
 
 function Loginpage() {
   const navigate = useNavigate();

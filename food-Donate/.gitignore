@@ -24,3 +24,25 @@ dist-ssr
 *.sw?
 .env
 .env.local
+
+
+# Dependency Directories
+node_modules/
+
+# Production Outputs (Generated on 'npm run build')
+dist/
+dist-ssr/
+build/
+
+# Local Environment Secret Keys
+.env
+.env.local
+.env.development.local
+.env.production.local
+*.env.local
+
+# IDE/System Caches
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

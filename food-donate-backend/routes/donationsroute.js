@@ -13,24 +13,27 @@ const {
   getPublicDonations
 } = require("../Controllers/DonationsController");
 
-router.get("/public",getPublicDonations)
+router.get("/public", getPublicDonations);
 
-// ================= STATUS =================
+router.get("/stats", async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      totalMeals: 1000,
+      totalNgos: 10,
+      totalCities:5,
+      totalVolunteers:50
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 router.put("/status/:id", verifyToken, updatedDonationStatus);
-
-// ================= CREATE =================
 router.post("/", verifyToken, createDonation);
-
-// ================= GET ALL =================
 router.get("/", verifyToken, getDonations);
-
-// ================= GET SINGLE =================
 router.get("/:id", verifyToken, getDonationById);
-
-// ================= UPDATE =================
 router.put("/:id", verifyToken, updateDonation);
-
-// ================= DELETE =================
 router.delete("/:id", verifyToken, deleteDonation);
 
 module.exports = router;

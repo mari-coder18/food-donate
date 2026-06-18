@@ -13,9 +13,9 @@ const createVolunteer = async (req, res) => {
 
     const volunteerStatus = status || "Available";
 
-    // ✅ FIXED: Checking if volunteers table is being used, keeping standard format consistent
+  
     const sql =
-      "INSERT INTO volunteers (name, phone, location, status) VALUES (?, ?, ?, ?)";
+      "INSERT INTO volunteers (name, phone, location, status,role) VALUES (?, ?, ?, ?,'volunteetr')";
 
     const [result] = await connection.query(sql, [name, phone, location, volunteerStatus]);
 
@@ -35,7 +35,7 @@ const createVolunteer = async (req, res) => {
 /* ================= GET ALL VOLUNTEERS ================= */
 const getVolunteers = async (req, res) => {
   try {
-    // ✅ FIXED: Standardized to query correct user profile context setup
+    
     const [rows] = await connection.query(
       "SELECT id, name, email, phone, status FROM users WHERE role = 'volunteer' ORDER BY id DESC"
     );
@@ -49,7 +49,7 @@ const getVolunteers = async (req, res) => {
 /* ================= GET VOLUNTEER BY ID ================= */
 const getVolunteerById = async (req, res) => {
   try {
-    // ✅ FIXED: Switched table context from 'volunteers' to 'users' to prevent Data Missing loop
+  //  Switched table  'volunteers' to 'users' 
     const [rows] = await connection.query(
       "SELECT id, name, email, phone, status FROM users WHERE id=? AND role='volunteer'",
       [req.params.id]
@@ -71,7 +71,7 @@ const updateVolunteer = async (req, res) => {
   try {
     const { name, phone, status } = req.body;
 
-    // ✅ FIXED: Aligned target loop to update users table instead of standalone missing entities
+  
     const sql =
       "UPDATE users SET name=?, phone=?, status=? WHERE id=? AND role='volunteer'";
 
@@ -110,7 +110,7 @@ const deleteVolunteer = async (req, res) => {
 /* ================= PICKUPS ================= */
 const getPickups = async (req, res) => {
   try {
-    // ✅ ALREADY SAFE: Kept accurate camelCase 'foodName' property intact da!
+  
     const sql = `
       SELECT 
         id,
