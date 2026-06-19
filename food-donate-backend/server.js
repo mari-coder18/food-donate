@@ -15,8 +15,15 @@ const userRoute = require("./routes/userRoute");
 
 const app = express();
 
-// ================= MIDDLEWARE =================
+app.set('trust proxy',1);
 
+
+app.use((req, res, next) => {
+  console.log(`${req.method} request to ${req.url} from origin: ${req.headers.origin}`);
+  next();
+});
+
+// ================= MIDDLEWARE =================
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -27,6 +34,7 @@ const limiter = rateLimit({
 const allowedOrigins = [
   "http://localhost:5173",
   "https://food-donate-gules.vercel.app",
+   "https://www.food-donate-gules.vercel.app",
 ];
 
 app.use(
