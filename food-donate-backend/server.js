@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit"); // 1. Import for security
 require("dotenv").config();
 
+// Connect to Database
 require("./config/db");
 
 // Routes
@@ -15,6 +17,13 @@ const app = express();
 
 // ================= MIDDLEWARE =================
 
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100,
+  message: "Too many requests, please try again later."
+});
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://food-donate-gules.vercel.app",
@@ -24,7 +33,6 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
@@ -37,6 +45,7 @@ app.use(
   })
 );
 
+app.use(limiter); 
 app.use(express.json());
 
 // ================= ROUTES =================
@@ -55,7 +64,8 @@ app.get("/", (req, res) => {
 
 // ================= PORT =================
 
-const PORT = process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 8080; 
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
