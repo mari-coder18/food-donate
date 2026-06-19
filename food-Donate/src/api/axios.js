@@ -1,13 +1,11 @@
 import axios from "axios";
 
-const getBaseUrl = () => {
-  return window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
-    : "https://food-donate-production.up.railway.app/api";
-};
+
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const api = axios.create({
-  baseURL: getBaseUrl(),
+  baseURL: API_URL,
   withCredentials: true
 });
 

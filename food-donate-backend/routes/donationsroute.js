@@ -10,9 +10,10 @@ const {
   updateDonation,
   getDonationById,
   updatedDonationStatus,
-  getPublicDonations
+  getPublicDonations,
 } = require("../Controllers/DonationsController");
 
+// Public Routes
 router.get("/public", getPublicDonations);
 
 router.get("/stats", async (req, res) => {
@@ -21,14 +22,18 @@ router.get("/stats", async (req, res) => {
       success: true,
       totalMeals: 1000,
       totalNgos: 10,
-      totalCities:5,
-      totalVolunteers:50
+      totalCities: 5,
+      totalVolunteers: 50,
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 });
 
+// Protected Routes
 router.put("/status/:id", verifyToken, updatedDonationStatus);
 router.post("/", verifyToken, createDonation);
 router.get("/", verifyToken, getDonations);
